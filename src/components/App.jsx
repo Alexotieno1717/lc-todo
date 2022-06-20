@@ -87,6 +87,34 @@ function App() {
     setTodos(updatedTodos);
   }
 
+  function remaining() {
+    return todos.filter(todo => !todo.isComplete).length;
+  }
+
+  function clearCompleted() {
+    setTodos([...todos].filter(todo => !todo.isComplete));
+  }
+
+  function completeAllTodos(params) {
+    const updatedTodos = todos.map(todos => {
+      todos.isComplete = true
+      
+      return todos;
+    })
+
+    setTodos(updatedTodos);
+  }
+
+  function todosFiltered(filter) {
+    if (filter === 'all') {
+      return todos;
+    } else if (filter === 'active') {
+      return todos.filter(todo => !todo.isComplete);
+    } else if (filter === 'completed') {
+      return todos.filter(todo => todo.isComplete);
+    }
+  }
+
 
 
   return (
@@ -103,6 +131,10 @@ function App() {
             markAsEditting={markAsEditting}
             updateTodo={updateTodo}
             deleteTodo={deleteTodo}
+            remaining={remaining}
+            clearCompleted={clearCompleted}
+            completeAllTodos={completeAllTodos}
+            todosFiltered={todosFiltered}
           />
         ) : (
           <NoTodos />

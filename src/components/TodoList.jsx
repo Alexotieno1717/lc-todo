@@ -1,19 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from "prop-types";
+import TodoItemsRemaing from './TodoItemsRemaing';
+import ClearCompleted from './ClearCompleted';
+import CompleteAllTodos from './CompleteAllTodos';
+import TodoFilters from './TodoFilters';  
 
 TodoList.propTypes = {
     todos: PropTypes.array.isRequired,
+    todosFiltered: PropTypes.func.isRequired,
     completeTodo: PropTypes.func.isRequired,
     markAsEditting: PropTypes.func.isRequired,
     updateTodo: PropTypes.func.isRequired,
     deleteTodo: PropTypes.func.isRequired,
+    remaining: PropTypes.func.isRequired,
+    clearCompleted: PropTypes.func.isRequired,
+    completeAllTodos: PropTypes.func.isRequired,
 };
 
 function TodoList(props) {
+    const [filter, setFilter] = useState('all');
+
   return (
     <>
         <ul className="todo-list">
-          {props.todos.map((todo, index) => (
+          {props.todosFiltered(filter).map((todo, index) => (
             <li key={todo.id} className="todo-item-container">
               <div className="todo-item">
                 <input type="checkbox" onChange={() => props.completeTodo(todo.id)} checked={todo.isComplete ? true : false } />
@@ -55,22 +65,20 @@ function TodoList(props) {
 
         <div className="check-all-container">
           <div>
-            <div className="button">Check All</div>
+            <CompleteAllTodos completeAllTodos={props.completeAllTodos} />
           </div>
 
-          <span>3 items remaining</span>
+          <TodoItemsRemaing remaining={props.remaining} />
         </div>
 
         <div className="other-buttons-container">
+            <TodoFilters 
+                todosFiltered={props.todosFiltered}
+                filter={filter}
+                setFilter={setFilter}
+            />
           <div>
-            <button className="button filter-button filter-button-active">
-              All
-            </button>
-            <button className="button filter-button">Active</button>
-            <button className="button filter-button">Completed</button>
-          </div>
-          <div>
-            <button className="button">Clear completed</button>
+            <ClearCompleted clearCompleted={props.clearCompleted} />
           </div>
         </div>
         </> 
