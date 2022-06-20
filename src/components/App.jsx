@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import NoTodos from './NoTodos';
 import '../reset.css';
 import '../App.css';
+import TodoForm from './TodoForm';
+import TodoList from './TodoList';
 
 function App() {
    
@@ -25,34 +28,23 @@ function App() {
     },
   ]);
 
-  const [todoInput, setTodosInput] = useState('');
-  const [idFortodo, setIdForTodo] = useState(4);
+   const [idFortodo, setIdForTodo] = useState(4);
 
-  function addTodo(event) {
-    event.preventDefault();
-
-    if (todoInput.trim().length === 0) {
-      return;
-    }
-
+  function addTodo(todo) {
     setTodos([...todos, {
       id: idFortodo,
-      title: todoInput,
+      title: todo,
       isComplete: false
     },
   ]);
 
-  setTodosInput('');
   setIdForTodo(prevIdForTodo => prevIdForTodo + 1);
   }
 
   function deleteTodo(id) {
-     setTodos([... todos].filter(todo => todo.id !== id));
+     setTodos([...todos].filter(todo => todo.id !== id));
   }
 
-  function handleInput(event) {
-    setTodosInput(event.target.value)
-  }
 
   function completeTodo(id) {
     const updatedTodos = todos.map(todos => {
@@ -101,77 +93,20 @@ function App() {
     <div className="todo-app-container">
       <div className="todo-app">
         <h2>Todo App</h2>
-        <form action="#" onSubmit={ addTodo }>
-          <input
-            type="text"
-            value={todoInput}
-            onChange={handleInput}
-            className="todo-input"
-            placeholder="What do you need to do?"
+
+        <TodoForm addTodo={addTodo} />
+
+        { todos.length > 0 ? (
+          <TodoList
+            todos={todos}
+            completeTodo={completeTodo}
+            markAsEditting={markAsEditting}
+            updateTodo={updateTodo}
+            deleteTodo={deleteTodo}
           />
-        </form>
-
-        <ul className="todo-list">
-          {todos.map((todo, index) => (
-            <li key={todo.id} className="todo-item-container">
-              <div className="todo-item">
-                <input type="checkbox" onChange={() => completeTodo(todo.id)} checked={todo.isComplete ? true : false } />
-                {!todo.isEditting ? (
-                  <span onDoubleClick={() => markAsEditting(todo.id)} className={`todo-item-label ${todo.isComplete ? 'line-through' : ''}` }>{todo.title}</span>
-                ) : (
-                  <input 
-                  onBlur={(event) => updateTodo(event, todo.id)}
-                  onKeyDown={event => {
-                    if (event.key === 'Enter') {
-                      updateTodo(event, todo.id);
-                    }
-                  }}
-                  type="text" 
-                  className="todo-item-input" 
-                  defaultValue={todo.title} 
-                  autoFocus
-                  />
-                )}
-              </div>
-              <button onClick={() => deleteTodo(todo.id)} className="x-button">
-                <svg
-                  className="x-button-icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        <div className="check-all-container">
-          <div>
-            <div className="button">Check All</div>
-          </div>
-
-          <span>3 items remaining</span>
-        </div>
-
-        <div className="other-buttons-container">
-          <div>
-            <button className="button filter-button filter-button-active">
-              All
-            </button>
-            <button className="button filter-button">Active</button>
-            <button className="button filter-button">Completed</button>
-          </div>
-          <div>
-            <button className="button">Clear completed</button>
-          </div>
-        </div>
+        ) : (
+          <NoTodos />
+        )}
       </div>
     </div>
   );
