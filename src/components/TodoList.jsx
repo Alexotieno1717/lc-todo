@@ -1,43 +1,79 @@
-import React, { useState } from 'react';
-import PropTypes from "prop-types";
+import React, { useContext } from 'react';
 import TodoItemsRemaing from './TodoItemsRemaing';
 import ClearCompleted from './ClearCompleted';
 import CompleteAllTodos from './CompleteAllTodos';
 import TodoFilters from './TodoFilters'; 
 import useToggle from '../hooks/useToggle'; 
+import { TodosContext } from '../context/TodosContext';
 
-TodoList.propTypes = {
-    todos: PropTypes.array.isRequired,
-    todosFiltered: PropTypes.func.isRequired,
-    completeTodo: PropTypes.func.isRequired,
-    markAsEditting: PropTypes.func.isRequired,
-    updateTodo: PropTypes.func.isRequired,
-    deleteTodo: PropTypes.func.isRequired,
-    remaining: PropTypes.func.isRequired,
-    clearCompleted: PropTypes.func.isRequired,
-    completeAllTodos: PropTypes.func.isRequired,
-};
 
-function TodoList(props) {
-    const [isFeaturesOneVisible, setFeaturesOneVisible] = useToggle();
-    const [isFeaturesTwoVisible, setFeaturesTwoVisible] = useToggle(false);
-    const [filter, setFilter] = useState('all');
+
+function TodoList() {
+  const { todos, setTodos, todosFiltered } = useContext(TodosContext);
+  const [isFeaturesOneVisible, setFeaturesOneVisible] = useToggle();
+  const [isFeaturesTwoVisible, setFeaturesTwoVisible] = useToggle();
+  
+  function deleteTodo(id) {
+    setTodos([...todos].filter(todo => todo.id !== id));
+ }
+
+
+ function completeTodo(id) {
+   const updatedTodos = todos.map(todos => {
+     if (todos.id === id) {
+       todos.isComplete = !todos.isComplete
+     }
+
+     return todos;
+   })
+
+   setTodos(updatedTodos);
+ }
+
+ function markAsEditting(id) {
+   const updatedTodos = todos.map(todos => {
+     if (todos.id === id) {
+       todos.isEditting = true
+     }
+
+     return todos;
+   })
+
+   setTodos(updatedTodos);
+ }
+
+ function updateTodo(event, id) {
+   const updatedTodos = todos.map(todos => {
+     if (todos.id === id) {
+       if (event.target.value.trim().length === 0) {
+         todos.isEditting = false;
+         return todos;
+       }
+       todos.title = event.target.value
+       todos.isEditting = false;
+     }
+
+     return todos;
+   })
+
+   setTodos(updatedTodos);
+ }
 
   return (
     <>
         <ul className="todo-list">
-          {props.todosFiltered(filter).map((todo, index) => (
+          {todosFiltered().map((todo, index) => (
             <li key={todo.id} className="todo-item-container">
               <div className="todo-item">
-                <input type="checkbox" onChange={() => props.completeTodo(todo.id)} checked={todo.isComplete ? true : false } />
+                <input type="checkbox" onChange={() => completeTodo(todo.id)} checked={todo.isComplete ? true : false } />
                 {!todo.isEditting ? (
-                  <span onDoubleClick={() => props.markAsEditting(todo.id)} className={`todo-item-label ${todo.isComplete ? 'line-through' : ''}` }>{todo.title}</span>
+                  <span onDoubleClick={() => markAsEditting(todo.id)} className={`todo-item-label ${todo.isComplete ? 'line-through' : ''}` }>{todo.title}</span>
                 ) : (
                   <input 
-                  onBlur={(event) => props.updateTodo(event, todo.id)}
+                  onBlur={(event) => updateTodo(event, todo.id)}
                   onKeyDown={event => {
                     if (event.key === 'Enter') {
-                      props.updateTodo(event, todo.id);
+                      updateTodo(event, todo.id);
                     }  
                   }}
                   type="text" 
@@ -47,7 +83,7 @@ function TodoList(props) {
                   />
                 )}
               </div>
-              <button onClick={() => props.deleteTodo(todo.id)} className="x-button">
+              <button onClick={() => deleteTodo(todo.id)} className="x-button">
                 <svg
                   className="x-button-icon"
                   fill="none"
@@ -77,22 +113,18 @@ function TodoList(props) {
         {isFeaturesOneVisible && (
           <div className="check-all-container">
             <div>
-              <CompleteAllTodos completeAllTodos={props.completeAllTodos} />
+              <CompleteAllTodos />
             </div>
 
-            <TodoItemsRemaing remaining={props.remaining} />
+            <TodoItemsRemaing />
           </div>
         )}
 
         {isFeaturesTwoVisible && (  
         <div className="other-buttons-container">
-            <TodoFilters 
-                todosFiltered={props.todosFiltered}
-                filter={filter}
-                setFilter={setFilter}
-            />
+            <TodoFilters />
           <div>
-            <ClearCompleted clearCompleted={props.clearCompleted} />
+            <ClearCompleted />
           </div>
         </div>
         )}
