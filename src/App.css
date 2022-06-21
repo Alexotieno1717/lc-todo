@@ -153,3 +153,10 @@ h2 {
 .name-lable{
   margin-top: 15px;
 }
+
+.toggles-container {
+  margin: 20px 0;
+}
+.button{
+  margin: 3px;
+}
