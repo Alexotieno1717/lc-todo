@@ -47,7 +47,6 @@ function App() {
 
   return (
     <TodosContext.Provider value={{ todos, setTodos, idFortodo, setIdForTodo, todosFiltered, filter, setFilter }}>
-      <div className="todo-app-container">
         <div className="todo-app">
           <div className="name-container">
             <h2>What is your Name?</h2>
@@ -85,7 +84,6 @@ function App() {
             </CSSTransition>
           </SwitchTransition> 
         </div>
-      </div>
     </TodosContext.Provider>
   );
 }

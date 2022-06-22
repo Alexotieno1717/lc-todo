@@ -4,7 +4,7 @@ import { TodosContext } from '../context/TodosContext';
 
 function TodoItemsRemaing() {
 
-  const { todos, setTodos } = useContext(TodosContext);
+  const { todos } = useContext(TodosContext);
 
   function remaining() {
     return todos.filter(todo => !todo.isComplete).length;
