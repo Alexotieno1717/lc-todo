@@ -5,6 +5,7 @@ import CompleteAllTodos from './CompleteAllTodos';
 import TodoFilters from './TodoFilters'; 
 import useToggle from '../hooks/useToggle'; 
 import { TodosContext } from '../context/TodosContext';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 
 
@@ -60,9 +61,14 @@ function TodoList() {
  }
 
   return (
-    <>
-        <ul className="todo-list">
+      <>
+        <TransitionGroup component="ul" className="todo-list">
           {todosFiltered().map((todo, index) => (
+            <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="slide-horizontal"
+          >
             <li key={todo.id} className="todo-item-container">
               <div className="todo-item">
                 <input type="checkbox" onChange={() => completeTodo(todo.id)} checked={todo.isComplete ? true : false } />
@@ -99,8 +105,10 @@ function TodoList() {
                 </svg>
               </button>
             </li>
+            </CSSTransition>
           ))}
-        </ul>
+        </TransitionGroup>
+
 
         <div className="toggles-container">
           <button onClick={setFeaturesOneVisible} className="button">
@@ -110,25 +118,36 @@ function TodoList() {
             Features Two Toggle
           </button>
         </div>
-        {isFeaturesOneVisible && (
+        <CSSTransition
+          in={isFeaturesOneVisible}
+          timeout={300}
+          classNames="slide-vertical"
+          unmountOnExit
+        >
           <div className="check-all-container">
-            <div>
-              <CompleteAllTodos />
+              <div>
+                <CompleteAllTodos />
+              </div>
+
+              <TodoItemsRemaing />
             </div>
+        </CSSTransition>
 
-            <TodoItemsRemaing />
+        <CSSTransition
+          in={isFeaturesTwoVisible}
+          timeout={300}
+          classNames="slide-vertical"
+          unmountOnExit
+        >
+          <div className="other-buttons-container">
+              <TodoFilters />
+            <div>
+              <ClearCompleted />
+            </div>
           </div>
-        )}
-
-        {isFeaturesTwoVisible && (  
-        <div className="other-buttons-container">
-            <TodoFilters />
-          <div>
-            <ClearCompleted />
-          </div>
-        </div>
-        )}
-        </> 
+        </CSSTransition>
+        </>
+          
         
   )
 }
